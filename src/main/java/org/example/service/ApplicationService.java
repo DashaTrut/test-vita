@@ -52,7 +52,7 @@ public class ApplicationService {
         Pageable pageable;
         if (checkOperator(idUser)) {
             if (search == null || search.isBlank()) {
-                return getAll(from, size, asc);
+                return getAllOperator(from, size, asc);
             } //получение оператором списка заявок по части имени
             List<User> list = userService.searchUser(search, idUser);
             List<Integer> listInt = list.stream()
@@ -80,17 +80,24 @@ public class ApplicationService {
         }
     }
 
-    public List<ApplicationDto> getAll(int from, int size, Boolean asc) { //получение оператором списка всех
+    public List<ApplicationDto> getAllOperator(int from, int size, Boolean asc) { //получение оператором списка всех
         int page = from / size;
+        Pageable pageable;
         if (asc) {
-            Pageable pageable = PageRequest.of(page, size, timeAsc);
-            return ApplicationMapper.toListApplicationDto(
-                    applicationRepository.findByStatusApplication(StatusApplication.SHIPPED, pageable));
+            pageable = PageRequest.of(page, size, timeAsc);
+
         } else {
-            Pageable pageable = PageRequest.of(page, size, timeDesc);
-            return ApplicationMapper.toListApplicationDto(
-                    applicationRepository.findByStatusApplication(StatusApplication.SHIPPED, pageable));
+            pageable = PageRequest.of(page, size, timeDesc);
         }
+        List<Application> applications = applicationRepository.findByStatusApplication(StatusApplication.SHIPPED, pageable);
+        applications.forEach(application -> {
+            String description = application.getDescription();
+            String formattedDescription = description.chars()
+                    .mapToObj(c -> (char) c + "-")
+                    .collect(Collectors.joining());
+            application.setDescription(formattedDescription);
+        });
+        return ApplicationMapper.toListApplicationDto(applications);
     }
 
     public Boolean checkOperator(int idUser) {
