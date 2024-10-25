@@ -1,22 +1,25 @@
 package org.example.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
+import javax.persistence.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "roles", schema = "public")
 public class Role implements GrantedAuthority {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     @Transient
@@ -28,17 +31,16 @@ public class Role implements GrantedAuthority {
         return getName();
     }
 
-    public Role() {
-    }
+
 
     // public StatusUser(Long id) {
 //        this.id = id;
 //    }
 
-    public Role(Integer id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+//    public Role(Integer id, String name) {
+//        this.id = id;
+//        this.name = name;
+//    }
 
 //    CUSTOMER, //пользователь
 //    OPERATOR,

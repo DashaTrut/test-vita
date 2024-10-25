@@ -1,5 +1,6 @@
 drop table IF EXISTS users CASCADE;
-drop table IF EXISTS status CASCADE;
+drop table IF EXISTS roles  CASCADE;
+drop table IF EXISTS us_role CASCADE;
 drop table IF EXISTS applications CASCADE;
 
     create table if not exists users (
@@ -30,7 +31,8 @@ drop table IF EXISTS applications CASCADE;
   role_id INTEGER,
   PRIMARY KEY (user_id, role_id),
   FOREIGN KEY (user_id) REFERENCES users (id),
-  FOREIGN KEY (role_id) REFERENCES roles (id);
+  FOREIGN KEY (role_id) REFERENCES roles (id)
+  );
 
    insert into roles (id, name) values  (1, 'ROLE_OPERATOR'), (2, 'ROLE_USER'), (3, 'ROLE_ADMIN');
    insert into users (name, email) values ('dasha', 'saffs@r.com'), ('valy', 'htpppf@y.com'), ('lea', 'tom@w.com');
