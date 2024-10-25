@@ -29,7 +29,7 @@ public class ApplicationController {
 
     }
 
-    @PatchMapping("{idApplication}") // обновление статуса или описания
+    @PatchMapping("/update/{idApplication}") // обновление статуса или описания
     public ApplicationDto updateStatusApplication(@PathVariable Integer idApplication,
                                                   @RequestBody ApplicationUpdateDto applicationUpdateDto,
                                                   @RequestHeader("X-Sharer-User-Id") Integer id) {
@@ -38,7 +38,7 @@ public class ApplicationController {
         return applicationService.updateStatusOrDescription(applicationUpdateDto, id, idApplication);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public Collection<ApplicationDto> getAll(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                              @RequestParam(required = false) String text,
                                              @RequestParam(defaultValue = "true", required = false) Boolean asc,

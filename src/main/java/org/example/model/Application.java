@@ -1,6 +1,7 @@
 package org.example.model;
 
 import lombok.*;
+import org.example.converter.StatusApplicationConverter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

@@ -1,7 +1,7 @@
 package org.example.repository;
 
-import org.example.model.StatusApplication;
 import org.example.model.Application;
+import org.example.model.StatusApplication;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 

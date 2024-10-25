@@ -27,7 +27,7 @@ public class UserController {
         return userService.getAll(id);
     }
 
-    @GetMapping
+    @GetMapping("/search")
     public List<User> searchUser(@RequestHeader("X-Sharer-User-Id") Integer id, @RequestParam(required = false) String text) {
         return userService.searchUser(text, id);
     }

@@ -1,4 +1,6 @@
-package org.example.model;
+package org.example.converter;
+
+import org.example.model.StatusApplication;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

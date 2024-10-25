@@ -1,14 +1,13 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.StatusApplication;
-import org.example.model.StatusUser;
 import org.example.dto.ApplicationDto;
 import org.example.dto.ApplicationMapper;
 import org.example.dto.ApplicationUpdateDto;
 import org.example.exception.EntityNotFoundException;
 import org.example.exception.ValidationException;
 import org.example.model.Application;
+import org.example.model.StatusApplication;
 import org.example.model.User;
 import org.example.repository.ApplicationRepository;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,14 +26,11 @@ public class ApplicationService {
     private final UserService userService;
     private final ApplicationRepository applicationRepository;
 
-    private Sort timeAsc = Sort.by(Sort.Direction.ASC, "timeCreate"); //по возрастанию
-    private Sort timeDesc = Sort.by(Sort.Direction.DESC, "timeCreate"); //по убыванию
+    private final Sort timeAsc = Sort.by(Sort.Direction.ASC, "timeCreate"); //по возрастанию
+    private final Sort timeDesc = Sort.by(Sort.Direction.DESC, "timeCreate"); //по убыванию
 
     public ApplicationDto create(ApplicationDto applicationDto, int idUser) {
         User user = userService.getUser(idUser); //проверяем что такой пользователь существует
-        if (!user.getStatus().contains(StatusUser.CUSTOMER)) {
-            throw new ValidationException("Только пользователи могут создавать заявки");
-        }
         try {
             if (applicationDto.getStatusApplication().equals(StatusApplication.ACCEPTED)
                     || applicationDto.getStatusApplication().equals(StatusApplication.REJECTED)) {
@@ -48,8 +45,7 @@ public class ApplicationService {
     }
 
     public List<ApplicationDto> getAllForUser(int idUser, int from, int size, Boolean asc, String search) {
-        int page = from / size;
-        Pageable pageable;
+        Pageable pageable = pageableOf(from, size, asc);
         if (checkOperator(idUser)) {
             if (search == null || search.isBlank()) {
                 return getAllOperator(from, size, asc);
@@ -58,19 +54,9 @@ public class ApplicationService {
             List<Integer> listInt = list.stream()
                     .map(User::getId)
                     .collect(Collectors.toList());
-            if (asc) {
-                pageable = PageRequest.of(page, size, timeAsc);
-            } else {
-                pageable = PageRequest.of(page, size, timeDesc);
-            }
             return ApplicationMapper.toListApplicationDto(
                     applicationRepository.findByStatusApplicationAndUserIdIn(StatusApplication.SHIPPED, listInt, pageable));
         } else { //получение не оператором список своих заявок
-            if (asc) {
-                pageable = PageRequest.of(page, size, timeAsc);
-            } else {
-                pageable = PageRequest.of(page, size, timeDesc);
-            }
             List<Application> result = applicationRepository.findAllByUserId(idUser, pageable);
             if (!result.isEmpty()) {
                 return ApplicationMapper.toListApplicationDto(result);
@@ -81,14 +67,7 @@ public class ApplicationService {
     }
 
     public List<ApplicationDto> getAllOperator(int from, int size, Boolean asc) { //получение оператором списка всех
-        int page = from / size;
-        Pageable pageable;
-        if (asc) {
-            pageable = PageRequest.of(page, size, timeAsc);
-
-        } else {
-            pageable = PageRequest.of(page, size, timeDesc);
-        }
+        Pageable pageable = pageableOf(from, size, asc);
         List<Application> applications = applicationRepository.findByStatusApplication(StatusApplication.SHIPPED, pageable);
         applications.forEach(application -> {
             String description = application.getDescription();
@@ -102,11 +81,8 @@ public class ApplicationService {
 
     public Boolean checkOperator(int idUser) {
         User user = userService.getUser(idUser);
-        List<StatusUser> list = user.getStatus();
-        if (list.contains(StatusUser.OPERATOR)) {
-            return true;
-        }
-        return false;
+        Set<Integer> list = user.getStatusId();
+        return list.contains(1);
     }
 
     public ApplicationDto updateStatusOrDescription(ApplicationUpdateDto applicationDto, int idUser, int idApplication) {
@@ -149,5 +125,14 @@ public class ApplicationService {
     public Application getApplication(int id) {
         return applicationRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Заявки не существует"));
+    }
+
+    public Pageable pageableOf(int from, int size, Boolean asc) {
+        int page = from / size;
+        if (asc) {
+            return PageRequest.of(page, size, timeAsc);
+        } else {
+            return PageRequest.of(page, size, timeDesc);
+        }
     }
 }
