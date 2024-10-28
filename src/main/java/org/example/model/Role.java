@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import javax.persistence.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -30,7 +29,6 @@ public class Role implements GrantedAuthority {
     public String getAuthority() {
         return getName();
     }
-
 
 
     // public StatusUser(Long id) {
