@@ -68,4 +68,5 @@ public class ApplicationControllerTest {
             throw new EntityNotFoundException(e.getMessage());
         }
     }
+
 }
