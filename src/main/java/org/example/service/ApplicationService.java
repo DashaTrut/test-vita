@@ -29,7 +29,7 @@ public class ApplicationService {
     private final Sort timeAsc = Sort.by(Sort.Direction.ASC, "timeCreate"); //по возрастанию
     private final Sort timeDesc = Sort.by(Sort.Direction.DESC, "timeCreate"); //по убыванию
 
-    public ApplicationDto create(ApplicationDto applicationDto, int idUser) {
+    public ApplicationDto create(ApplicationDto applicationDto, Integer idUser) {
         User user = userService.getUser(idUser); //проверяем что такой пользователь существует
         try {
             if (applicationDto.getStatusApplication().equals(StatusApplication.ACCEPTED)

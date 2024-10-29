@@ -30,7 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/search").hasRole("ADMIN")
                 .antMatchers("/user/operator").hasRole("ADMIN")
 
-                .antMatchers("/application/update").hasAnyRole("OPERATOR", "USER")
+                .antMatchers("/application/update/{idApplication}").hasAnyRole("OPERATOR", "USER")
                 .antMatchers("/application/all").hasAnyRole("OPERATOR", "USER")
                 .antMatchers("/application").hasRole("USER")
                 .and()
